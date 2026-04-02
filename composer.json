@@ -1,0 +1,17 @@
+{
+    "name": "nazgu/test-ea",
+    "description": "test EA api",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Nazgu\\TestEa\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Maksim Chalyh",
+            "email": "nazgulius@yandex.ru"
+        }
+    ],
+    "require": {}
+}
