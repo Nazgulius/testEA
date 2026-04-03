@@ -10,34 +10,33 @@ return new class extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->string('g_number')->unique(); // уникальный идентификатор
-            $table->date('date');
-            $table->date('last_change_date')->nullable();
-            $table->string('supplier_article');
-            $table->string('tech_size');
-            $table->bigInteger('barcode');
-            $table->decimal('total_price', 10, 2);
-            $table->integer('discount_percent')->nullable();
-            $table->boolean('is_supply')->default(false);
-            $table->boolean('is_realization')->default(false);
-            $table->text('promo_code_discount')->nullable();
-            $table->string('warehouse_name', 255);
-            $table->string('country_name', 100);
-            $table->string('oblast_okrug_name', 255);
-            $table->string('region_name', 255);
-            $table->bigInteger('income_id')->nullable();
-            $table->string('sale_id')->unique();
-            $table->bigInteger('odid')->nullable();
-            $table->string('spp', 50)->nullable();
-            $table->decimal('for_pay', 10, 2)->nullable();
-            $table->decimal('finished_price', 10, 2)->nullable();
-            $table->decimal('price_with_disc', 10, 2)->nullable();
-            $table->bigInteger('nm_id');
-            $table->string('subject', 255);
-            $table->string('category', 255);
-            $table->string('brand', 255);
-            $table->boolean('is_storno')->nullable();
-            $table->timestamps();
+            $table->date('date'); // дата записи остатков
+            $table->date('last_change_date')->nullable(); // дата последнего изменения
+            $table->string('supplier_article', 255)->nullable(); // артикул поставщика
+            $table->string('tech_size', 255)->nullable(); // технический размер
+            $table->bigInteger('barcode'); // штрих‑код
+            $table->integer('quantity'); // текущее количество
+            $table->boolean('is_supply')->nullable(); // флаг поставки
+            $table->boolean('is_realization')->nullable(); // флаг реализации
+            $table->integer('quantity_full')->nullable(); // полное количество
+            $table->string('warehouse_name', 255); // название склада
+            $table->integer('in_way_to_client')->nullable(); // в пути к клиенту
+            $table->integer('in_way_from_client')->nullable(); // в пути от клиента
+            $table->bigInteger('nm_id'); // ID номенклатуры
+            $table->string('subject', 255)->nullable(); // предмет/тип товара
+            $table->string('category', 255)->nullable(); // категория товара
+            $table->string('brand', 255)->nullable(); // бренд
+            $table->string('sc_code', 255)->nullable(); // код склада/системы
+            $table->decimal('price', 12, 2)->nullable(); // цена
+            $table->decimal('discount', 5, 2)->nullable(); // скидка (в процентах или сумме)
+
+            $table->timestamps(); // created_at и updated_at
+
+            // Индексы для ускорения поиска
+            $table->index('date');
+            $table->index('warehouse_name');
+            $table->index('nm_id');
+            $table->index('barcode');
         });
     }
 

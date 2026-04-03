@@ -10,34 +10,26 @@ return new class extends Migration
     {
         Schema::create('incomes', function (Blueprint $table) {
             $table->id();
-           $table->string('g_number')->unique(); // уникальный идентификатор
-            $table->date('date');
-            $table->date('last_change_date')->nullable();
-            $table->string('supplier_article');
-            $table->string('tech_size');
-            $table->bigInteger('barcode');
-            $table->decimal('total_price', 10, 2);
-            $table->integer('discount_percent')->nullable();
-            $table->boolean('is_supply')->default(false);
-            $table->boolean('is_realization')->default(false);
-            $table->text('promo_code_discount')->nullable();
-            $table->string('warehouse_name', 255);
-            $table->string('country_name', 100);
-            $table->string('oblast_okrug_name', 255);
-            $table->string('region_name', 255);
-            $table->bigInteger('income_id')->nullable();
-            $table->string('sale_id')->unique();
-            $table->bigInteger('odid')->nullable();
-            $table->string('spp', 50)->nullable();
-            $table->decimal('for_pay', 10, 2)->nullable();
-            $table->decimal('finished_price', 10, 2)->nullable();
-            $table->decimal('price_with_disc', 10, 2)->nullable();
-            $table->bigInteger('nm_id');
-            $table->string('subject', 255);
-            $table->string('category', 255);
-            $table->string('brand', 255);
-            $table->boolean('is_storno')->nullable();
-            $table->timestamps();
+            $table->bigInteger('income_id')->unique(); // уникальный ID поступления
+            $table->string('number', 255)->nullable(); // номер поступления (может быть пустым)
+            $table->date('date'); // дата поступления
+            $table->date('last_change_date')->nullable(); // дата последнего изменения
+            $table->string('supplier_article', 255); // артикул поставщика
+            $table->string('tech_size', 255); // технический размер
+            $table->bigInteger('barcode'); // штрих‑код
+            $table->integer('quantity'); // количество единиц товара
+            $table->decimal('total_price', 12, 2); // общая цена
+            $table->date('date_close')->nullable(); // дата закрытия поступления
+            $table->string('warehouse_name', 255); // название склада
+            $table->bigInteger('nm_id'); // ID номенклатуры
+
+            $table->timestamps(); // created_at и updated_at
+
+            // Индексы для ускорения поиска
+            $table->index('date');
+            $table->index('warehouse_name');
+            $table->index('nm_id');
+            $table->index('income_id');
         });
     }
 

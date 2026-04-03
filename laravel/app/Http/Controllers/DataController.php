@@ -109,9 +109,19 @@ class DataController extends Controller
                     continue;
                 }
 
+                // Фильтруем поля: оставляем только те, что есть в API
+                $filteredData = array_filter($orderData, function ($key) {
+                    return in_array($key, [
+                        'g_number', 'date', 'last_change_date', 'supplier_article',
+                'tech_size', 'barcode', 'total_price', 'discount_percent',
+                'warehouse_name', 'oblast', 'income_id', 'odid', 'nm_id',
+                'subject', 'category', 'brand', 'is_cancel', 'cancel_dt'
+                    ]);
+                }, ARRAY_FILTER_USE_KEY);
+
                 Order::updateOrCreate(
                     ['g_number' => $orderData['g_number']],
-                    $orderData
+                    $filteredData
                 );
                 $processedCount++;
             }
@@ -123,45 +133,76 @@ class DataController extends Controller
     }
 
     private function fetchStocks()
-    {
-        $response = Http::get($this->baseUrl . '/api/stocks', [
-            'dateFrom' => '2026-04-03',
-            'page' => 1,
-            'limit' => 500,
-            'key' => $this->token
-        ]);
+{
+    $response = Http::get($this->baseUrl . '/api/stocks', [
+        'dateFrom' => now()->format('Y-m-d'), 
+        'page' => 1,
+        'limit' => 500,
+        'key' => $this->token
+    ]);
 
-        Log::info('Ответ API складов:', [
-            'status' => $response->status(),
-            'body' => $response->body()
-        ]);
+    Log::info('Ответ API складов:', [
+        'status' => $response->status(),
+        'body' => $response->body()
+    ]);
 
-        if ($response->successful()) {
-            $stocks = $response->json()['data'] ?? [];
-            $processedCount = 0;
-            $skippedCount = 0;
+    if ($response->successful()) {
+        $stocks = $response->json()['data'] ?? [];
+        $processedCount = 0;
+        $skippedCount = 0;
 
-            foreach ($stocks as $stockData) {
-                if (!isset($stockData['stock_id'])) {
-                    Log::warning('Пропущена запись складов — отсутствует stock_id', [
-                        'stock_id' => $stockData['stock_id'] ?? 'unknown'
-                    ]);
-                    $skippedCount++;
-                    continue;
-                }
-
-                Stock::updateOrCreate(
-                    ['stock_id' => $stockData['stock_id']],
-                    $stockData
-                );
-                $processedCount++;
+        foreach ($stocks as $stockData) {
+            // Проверяем обязательные поля для идентификации записи
+            if (!isset($stockData['barcode']) || !isset($stockData['warehouse_name'])) {
+                Log::warning('Пропущена запись складов — отсутствует barcode или warehouse_name', [
+                    'barcode' => $stockData['barcode'] ?? 'unknown',
+            'warehouse_name' => $stockData['warehouse_name'] ?? 'unknown'
+                ]);
+                $skippedCount++;
+                continue;
             }
 
-            Log::info('Склады загружены: ' . $processedCount . ' записей обработано, ' . $skippedCount . ' пропущено');
-        } else {
-            Log::error('Ошибка загрузки складов: ' . $response->status() . ', ответ: ' . $response->body());
+            // Фильтруем данные: оставляем только поля, определённые в модели Stock
+            $filteredData = array_filter($stockData, function ($key) {
+                return in_array($key, [
+                    'date',
+                    'last_change_date',
+                    'supplier_article',
+                    'tech_size',
+                    'barcode',
+                    'quantity',
+                    'is_supply',
+                    'is_realization',
+                    'quantity_full',
+                    'warehouse_name',
+                    'in_way_to_client',
+                    'in_way_from_client',
+                    'nm_id',
+                    'subject',
+                    'category',
+                    'brand',
+                    'sc_code',
+                    'price',
+                    'discount'
+                ]);
+            }, ARRAY_FILTER_USE_KEY);
+
+            Stock::updateOrCreate(
+                [
+                    'barcode' => $stockData['barcode'],
+            'warehouse_name' => $stockData['warehouse_name']
+                ],
+                $filteredData
+            );
+            $processedCount++;
         }
+
+        Log::info('Склады загружены: ' . $processedCount . ' записей обработано, ' . $skippedCount . ' пропущено');
+    } else {
+        Log::error('Ошибка загрузки складов: ' . $response->status() . ', ответ: ' . $response->body());
     }
+}
+
 
     private function fetchIncomes()
     {
@@ -184,8 +225,8 @@ class DataController extends Controller
             $skippedCount = 0;
 
             foreach ($incomes as $incomeData) {
-                if (!isset($incomeData['g_number'])) {
-                    Log::warning('Пропущена запись доходов — отсутствует g_number', [
+                if (!isset($incomeData['income_id'])) {
+                    Log::warning('Пропущена запись доходов — отсутствует income_id', [
                         'income_id' => $incomeData['income_id'] ?? 'unknown'
                     ]);
                     $skippedCount++;
@@ -193,7 +234,7 @@ class DataController extends Controller
                 }
 
                 Income::updateOrCreate(
-                    ['g_number' => $incomeData['g_number']],
+                    ['income_id' => $incomeData['income_id']],
                     $incomeData
                 );
                 $processedCount++;
