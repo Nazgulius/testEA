@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>Laravel Home</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -20,6 +20,26 @@
         @endif
     </head>
     <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-top min-h-screen flex-col">
-       <h1>Привет тест ЕА api!</h1>
+        <h1>Tест ЕА api!</h1>
+
+        <div class="main">
+            <h2>Авторизация</h2>
+            <h3>Введите данные для авторизации</h3>
+
+            <form action="/login" method="POST">
+                @csrf
+                <label for="token">
+                    Секретный токен:
+                </label>
+                <input type="password" id="token" name="token"
+                    placeholder="Введите секретный токен" required>
+
+                <div class="wrap">
+                    <button type="submit">
+                        Войти
+                    </button>
+                </div>
+            </form>
+        </div>
     </body>
 </html>
