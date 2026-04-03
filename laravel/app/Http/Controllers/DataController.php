@@ -90,20 +90,33 @@ class DataController extends Controller
             'key' => $this->token
         ]);
 
-        Log::info('Ответ API ордер:', [
+        Log::info('Ответ API заказов:', [
             'status' => $response->status(),
             'body' => $response->body()
         ]);
 
         if ($response->successful()) {
             $orders = $response->json()['data'] ?? [];
+            $processedCount = 0;
+            $skippedCount = 0;
+
             foreach ($orders as $orderData) {
+                if (!isset($orderData['g_number'])) {
+                    Log::warning('Пропущена запись заказов — отсутствует g_number', [
+                        'order_id' => $orderData['order_id'] ?? 'unknown'
+                    ]);
+                    $skippedCount++;
+                    continue;
+                }
+
                 Order::updateOrCreate(
-                    ['id' => $orderData['id']],
+                    ['g_number' => $orderData['g_number']],
                     $orderData
                 );
+                $processedCount++;
             }
-            Log::info('Заказы загружены: ' . count($orders) . ' записей');
+
+            Log::info('Заказы загружены: ' . $processedCount . ' записей обработано, ' . $skippedCount . ' пропущено');
         } else {
             Log::error('Ошибка загрузки заказов: ' . $response->status() . ', ответ: ' . $response->body());
         }
@@ -112,26 +125,39 @@ class DataController extends Controller
     private function fetchStocks()
     {
         $response = Http::get($this->baseUrl . '/api/stocks', [
-            'dateFrom' => '2026-04-03', // текущий день в 2026 году
+            'dateFrom' => '2026-04-03',
             'page' => 1,
             'limit' => 500,
             'key' => $this->token
         ]);
 
-        Log::info('Ответ API сток:', [
+        Log::info('Ответ API складов:', [
             'status' => $response->status(),
             'body' => $response->body()
         ]);
 
         if ($response->successful()) {
             $stocks = $response->json()['data'] ?? [];
+            $processedCount = 0;
+            $skippedCount = 0;
+
             foreach ($stocks as $stockData) {
+                if (!isset($stockData['stock_id'])) {
+                    Log::warning('Пропущена запись складов — отсутствует stock_id', [
+                        'stock_id' => $stockData['stock_id'] ?? 'unknown'
+                    ]);
+                    $skippedCount++;
+                    continue;
+                }
+
                 Stock::updateOrCreate(
-                    ['id' => $stockData['id']],
+                    ['stock_id' => $stockData['stock_id']],
                     $stockData
                 );
+                $processedCount++;
             }
-            Log::info('Склады загружены: ' . count($stocks) . ' записей');
+
+            Log::info('Склады загружены: ' . $processedCount . ' записей обработано, ' . $skippedCount . ' пропущено');
         } else {
             Log::error('Ошибка загрузки складов: ' . $response->status() . ', ответ: ' . $response->body());
         }
@@ -147,22 +173,36 @@ class DataController extends Controller
             'key' => $this->token
         ]);
 
-        Log::info('Ответ API инком:', [
+        Log::info('Ответ API доходов:', [
             'status' => $response->status(),
             'body' => $response->body()
         ]);
 
         if ($response->successful()) {
             $incomes = $response->json()['data'] ?? [];
+            $processedCount = 0;
+            $skippedCount = 0;
+
             foreach ($incomes as $incomeData) {
+                if (!isset($incomeData['g_number'])) {
+                    Log::warning('Пропущена запись доходов — отсутствует g_number', [
+                        'income_id' => $incomeData['income_id'] ?? 'unknown'
+                    ]);
+                    $skippedCount++;
+                    continue;
+                }
+
                 Income::updateOrCreate(
-                    ['id' => $incomeData['id']],
+                    ['g_number' => $incomeData['g_number']],
                     $incomeData
                 );
+                $processedCount++;
             }
-            Log::info('Доходы загружены: ' . count($incomes) . ' записей');
+
+            Log::info('Доходы загружены: ' . $processedCount . ' записей обработано, ' . $skippedCount . ' пропущено');
         } else {
             Log::error('Ошибка загрузки доходов: ' . $response->status() . ', ответ: ' . $response->body());
         }
     }
+
 }

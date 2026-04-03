@@ -7,15 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 class Income extends Model
 {
     protected $fillable = [
-        'product_name',
-        'quantity',
-        'price',
-        'income_date'
+        'g_number', 'date', 'last_change_date', 'supplier_article',
+        'tech_size', 'barcode', 'total_price', 'discount_percent',
+        'is_supply', 'is_realization', 'promo_code_discount',
+        'warehouse_name', 'country_name', 'oblast_okrug_name',
+        'region_name', 'income_id', 'sale_id', 'odid', 'spp',
+        'for_pay', 'finished_price', 'price_with_disc', 'nm_id',
+        'subject', 'category', 'brand', 'is_storno'
     ];
 
     protected $casts = [
-        'quantity' => 'integer',
-        'price' => 'decimal:2',
-        'income_date' => 'date'
+        'date' => 'date',
+        'last_change_date' => 'date',
+        'total_price' => 'decimal:2',
+        'for_pay' => 'decimal:2',
+        'finished_price' => 'decimal:2',
+        'price_with_disc' => 'decimal:2'
     ];
 }

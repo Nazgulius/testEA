@@ -7,15 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
-        'product_name',
-        'quantity',
-        'price',
-        'order_date'
+        'g_number', 'date', 'last_change_date', 'supplier_article',
+        'tech_size', 'barcode', 'total_price', 'discount_percent',
+        'warehouse_name', 'oblast', 'income_id', 'odid', 'nm_id',
+        'subject', 'category', 'brand', 'is_cancel', 'cancel_dt'
     ];
 
     protected $casts = [
-        'quantity' => 'integer',
-        'price' => 'decimal:2',
-        'order_date' => 'date'
+        'date' => 'datetime',
+        'last_change_date' => 'date',
+        'total_price' => 'decimal:2',
+        'cancel_dt' => 'datetime'
     ];
+
+    protected function getCountryNameAttribute()
+    {
+        return $this->attributes['country_name'] ?? 'Россия';
+    }
 }
