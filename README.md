@@ -8,19 +8,20 @@
 - **База данных:** laravel
 - **Пользователь:** root
 - **Пароль:** 12345
-Параметры для подключения сайт https://cp.beget.com/mysql или 
-Версия СУБД:
-MySQL 8.0
-Сервер для подключения сайтов:
-localhost
-Сервер для внешних подключений:
-nazgul7f.beget.tech
-Имя пользователя:
-Совпадает с именем БД
-phpMyAdmin:
-https://center.beget.com/phpMyAdmin
-
-пароль к БД 123456eA
+  
+Параметры для подключения сайт https://cp.beget.com/mysql  
+Версия СУБД:  
+MySQL 8.0  
+Сервер для подключения сайтов:  
+localhost  
+Сервер для внешних подключений:  
+nazgul7f.beget.tech  
+Имя пользователя:  
+Совпадает с именем БД  
+phpMyAdmin:  
+https://center.beget.com/phpMyAdmin  
+  
+пароль к БД 123456eA  
 
 ## Таблицы
 - `sales` — продажи
